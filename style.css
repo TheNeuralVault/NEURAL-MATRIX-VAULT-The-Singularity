@@ -1,120 +1,155 @@
-:root {
-    --void: #030303;
-    --deep-space: #050505;
-    --neon-blue: #00f3ff;
-    --titanium: #e0e0e0;
-    --glass-surface: rgba(15, 15, 15, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --diamond-border: rgba(0, 243, 255, 0.3);
+/**
+ * NEURAL MATRIX VAULT | STABLE CORE
+ * Status: HIGH VISIBILITY MODE
+ */
+
+console.log("%c/// SYSTEM: ONLINE", "background:#000; color:#00f3ff; font-weight:bold; padding:8px; border:1px solid #00f3ff;");
+
+// --- UTILITIES ---
+try { lucide.createIcons(); } catch(e) {}
+let isVisible = true;
+document.addEventListener("visibilitychange", () => { isVisible = !document.hidden; });
+const isMobile = window.innerWidth < 768;
+
+// --- 1. REMOVE BOOT SCREEN (INSTANT ACCESS) ---
+// We removed the HTML for the boot screen to ensure content is visible immediately.
+// If the element exists, we hide it immediately.
+const bootOverlay = document.getElementById('boot-overlay');
+if(bootOverlay) bootOverlay.style.display = 'none';
+
+// --- 2. AUDIO ENGINE (ON INTERACTION) ---
+const AudioApex = {
+    ctx: null,
     
-    /* PILLAR ENERGIES */
-    --p-core: #00f3ff;
-    --p-flux: #ffaa00;
-    --p-aero: #aaddff;
-    --p-nexus: #ff0055;
-    --p-cipher: #88ff00;
-    --p-prism: #aa00ff;
-    --p-omega: #ffffff;
+    init: function() {
+        if (this.ctx) return;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AC();
+    },
+
+    playInteract: function() {
+        if (!this.ctx) this.init();
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        // Simple Click "Thud"
+        osc.frequency.setValueAtTime(200, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.1);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(t + 0.1);
+    }
+};
+
+// --- 3. NEURAL BACKGROUND (LIGHTWEIGHT) ---
+const canvas = document.getElementById('neural-engine');
+if(canvas) {
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
     
-    --font-head: 'Outfit', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-    --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            if(this.x < 0 || this.x > width) this.vx *= -1;
+            if(this.y < 0 || this.y > height) this.vy *= -1;
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(0, 243, 255, 0.4)'; // Brighter dots
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 1.5, 0, Math.PI*2); // Bigger dots
+            ctx.fill();
+        }
+    }
+
+    // Init Logic
+    for(let i=0; i<50; i++) particles.push(new Particle());
+
+    function animate() {
+        if(!isVisible) { requestAnimationFrame(animate); return; }
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw Lines
+        ctx.beginPath();
+        for(let i=0; i<particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            for(let j=i; j<particles.length; j++) {
+                let dx = particles[i].x - particles[j].x;
+                let dy = particles[i].y - particles[j].y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 100) {
+                    ctx.strokeStyle = `rgba(0, 243, 255, ${1 - dist/100})`;
+                    ctx.lineWidth = 0.3;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                }
+            }
+        }
+        ctx.stroke();
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
-* { box-sizing: border-box; cursor: none; }
-html { scroll-behavior: smooth; font-size: 16px; }
-::selection { background: var(--neon-blue); color: #000; }
-
-body {
-    background-color: var(--void); color: var(--titanium);
-    font-family: var(--font-head); margin: 0; overflow-x: hidden;
-    line-height: 1.6;
+// --- 4. 3D OBJECT (SIMPLIFIED FOR MOBILE STABILITY) ---
+function init3D() {
+    const container = document.getElementById('dyson-sphere');
+    if(!container) return;
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth/container.clientHeight, 0.1, 100);
+    camera.position.z = 6;
+    
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+    
+    const geometry = new THREE.IcosahedronGeometry(2, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.4 });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+    
+    function animate() {
+        if(isVisible) {
+            sphere.rotation.y += 0.003;
+            sphere.rotation.x -= 0.002;
+            renderer.render(scene, camera);
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
+// Delay 3D slightly to prioritize UI render
+setTimeout(init3D, 500);
 
-#boot-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s var(--ease-smooth); }
-.boot-terminal { width: 320px; font-family: var(--font-mono); color: var(--neon-blue); text-align: center; }
-.boot-log { display: flex; flex-direction: column; font-size: 0.7rem; opacity: 0.7; margin-bottom: 20px; }
-.boot-loader { width: 100%; height: 2px; background: #222; position: relative; overflow: hidden; }
-.boot-fill { width: 0%; height: 100%; background: var(--neon-blue); transition: width 1.5s ease-in-out; }
-.boot-cta { margin-top: 15px; font-size: 0.8rem; animation: blink 1s infinite; letter-spacing: 2px; opacity: 0; transition: opacity 0.5s;}
-.boot-active .boot-cta.ready { opacity: 1; }
-.boot-hidden { opacity: 0; pointer-events: none; }
+// --- 5. INTERACTION ---
+// Attach audio to buttons
+document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('click', () => AudioApex.playInteract());
+});
 
-#void-container { position: fixed; inset: 0; z-index: -1; }
-.fx-noise { position: fixed; inset: 0; pointer-events: none; z-index: 10; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
-.fx-scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 11; background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%); background-size: 100% 4px; }
-.fx-vignette { position: fixed; inset: 0; pointer-events: none; z-index: 12; background: radial-gradient(circle at center, transparent 50%, var(--void) 140%); }
-
-.apex-header { position: fixed; top: 0; width: 100%; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-.brand-lockup { font-family: var(--font-mono); font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
-.brand-sigil { color: var(--neon-blue); }
-.highlight { color: var(--neon-blue); }
-.status-dot { width: 6px; height: 6px; background: #0f0; border-radius: 50%; box-shadow: 0 0 8px #0f0; display: inline-block; margin-right: 8px;}
-.system-status { font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid #333; padding: 5px 12px; border-radius: 20px; display: none; }
-.nav-link { margin-left: 20px; text-decoration: none; color: #888; font-size: 0.75rem; font-family: var(--font-mono); position: relative; transition: 0.3s; }
-.nav-link:hover { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
-
-.hero-stage { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 20px; position: relative; z-index: 20; text-align: center; }
-.titan-title { font-size: clamp(3rem, 12vw, 9rem); font-weight: 800; line-height: 0.85; margin: 30px 0; letter-spacing: -3px; text-transform: uppercase; background: linear-gradient(180deg, #ffffff 0%, #666666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px rgba(255,255,255,0.1)); }
-.intel-badge { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.3); padding: 6px 12px; background: rgba(0,0,0,0.5); }
-.artifact-containment { width: 100%; max-width: 600px; height: 400px; margin: 0 auto; position: relative; opacity: 0; animation: fadeUp 1s forwards 1.5s; }
-.neon-text { color: var(--neon-blue); font-weight: 500; }
-
-.sector { padding: 100px 20px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 20; }
-.sector-head { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
-.sector-line { flex: 1; height: 1px; background: linear-gradient(90deg, #333, transparent); }
-.titanium-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-
-.diamond-glass { background: var(--glass-surface); border: 1px solid var(--glass-border); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border-radius: 8px; overflow: hidden; position: relative; transition: all 0.4s var(--ease-smooth); box-shadow: 0 20px 40px -20px rgba(0,0,0,0.7); }
-.diamond-glass::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%); pointer-events: none; }
-.diamond-glass:hover { border-color: var(--diamond-border); transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 60px -20px rgba(0, 243, 255, 0.15); }
-.card-interior { padding: 35px; height: 100%; display: flex; flex-direction: column; }
-.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.diamond-glass h3 { margin: 0 0 15px 0; font-size: 1.5rem; font-weight: 500; color: #fff; }
-.diamond-glass p { font-size: 0.95rem; color: #aaa; margin: 0 0 30px 0; flex-grow: 1; }
-
-.pillar-core:hover { border-color: var(--p-core); box-shadow: 0 30px 60px -20px rgba(0,243,255,0.2); } .pillar-core .card-icon { color: var(--p-core); }
-.pillar-flux:hover { border-color: var(--p-flux); box-shadow: 0 30px 60px -20px rgba(255,170,0,0.2); } .pillar-flux .card-icon { color: var(--p-flux); }
-.pillar-aero:hover { border-color: var(--p-aero); box-shadow: 0 30px 60px -20px rgba(170,221,255,0.2); } .pillar-aero .card-icon { color: var(--p-aero); }
-.pillar-nexus:hover { border-color: var(--p-nexus); box-shadow: 0 30px 60px -20px rgba(255,0,85,0.2); } .pillar-nexus .card-icon { color: var(--p-nexus); }
-.pillar-cipher:hover { border-color: var(--p-cipher); box-shadow: 0 30px 60px -20px rgba(136,255,0,0.2); } .pillar-cipher .card-icon { color: var(--p-cipher); }
-.pillar-prism:hover { border-color: var(--p-prism); box-shadow: 0 30px 60px -20px rgba(170,0,255,0.2); } .pillar-prism .card-icon { color: var(--p-prism); }
-.pillar-omega:hover { border-color: var(--p-omega); box-shadow: 0 30px 60px -20px rgba(255,255,255,0.2); } .pillar-omega .card-icon { color: var(--p-omega); }
-
-.rank-badge { font-family: var(--font-mono); font-size: 0.6rem; color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 8px; letter-spacing: 1px; }
-.micro-tag { font-family: var(--font-mono); font-size: 0.7rem; color: #555; border: 1px solid #333; padding: 2px 6px; }
-
-.card-bot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; }
-.price-tag { font-family: var(--font-mono); font-size: 1rem; color: #fff; }
-.btn-apex { background: #fff; color: #000; padding: 14px 28px; border: none; font-weight: 800; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 1px; position: relative; overflow: hidden; transition: 0.3s; text-decoration: none; display: inline-block; }
-.btn-apex::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); transition: 0.5s; }
-.btn-apex:hover { background: var(--neon-blue); box-shadow: 0 0 25px var(--neon-blue); }
-.btn-apex:hover::after { left: 100%; }
-.btn-apex.small { padding: 12px 20px; font-size: 0.75rem; }
-.btn-ghost { padding: 10px 18px; border: 1px solid #444; color: #aaa; font-family: var(--font-mono); font-size: 0.75rem; text-decoration: none; transition: 0.3s; display: inline-block; }
-.btn-ghost:hover { border-color: #fff; color: #fff; }
-
-.wide { grid-column: 1 / -1; }
-@media (min-width: 1000px) { .wide { grid-column: span 2; } }
-
-.narrow { max-width: 800px; }
-.form-matrix { padding: 40px; }
-.input-cell { position: relative; margin-bottom: 30px; }
-.input-cell label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--neon-blue); margin-bottom: 10px; display: block; }
-.input-cell input, .input-cell textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid #333; padding: 15px 0; color: #fff; font-family: var(--font-mono); font-size: 1rem; outline: none; transition: 0.3s; }
-.input-cell input:focus, .input-cell textarea:focus { border-bottom-color: var(--neon-blue); }
-.btn-apex.full { width: 100%; text-align: center; }
-
-.apex-footer { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px; margin-top: 100px; border-top: 1px solid #222; }
-.legal-links a { color: #555; text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; margin: 0 15px; transition: 0.3s; }
-.legal-links a:hover { color: var(--neon-blue); }
-
-.cursor-tracker { width: 6px; height: 6px; background: var(--neon-blue); position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999; display: none; }
-.cursor-reticle { width: 50px; height: 50px; border: 1px solid rgba(255,255,255,0.2); position: fixed; border-radius: 50%; pointer-events: none; z-index: 9998; transition: transform 0.1s, width 0.3s, height 0.3s; display: none; }
-
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes glitch-skew { 0% { transform: skew(0deg); } 20% { transform: skew(-2deg); } 40% { transform: skew(2deg); } 60% { transform: skew(-1deg); } 80% { transform: skew(1deg); } 100% { transform: skew(0deg); } }
-.glitch:hover { animation: glitch-skew 0.3s var(--ease-smooth) both infinite; color: var(--neon-blue); text-shadow: 2px 0 #f00, -2px 0 #00f; }
-
-@media (min-width: 768px) { .apex-header { padding: 25px 50px; } .system-status { display: block; } .cursor-tracker, .cursor-reticle { display: block; } }
+// --- 6. SMOOTH SCROLL (OPTIONAL) ---
+try {
+    const lenis = new Lenis({ duration: 1.2, smooth: true });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+} catch(e) {}
