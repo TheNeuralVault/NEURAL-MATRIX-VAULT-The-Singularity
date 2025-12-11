@@ -6,13 +6,30 @@ const isMobile = window.innerWidth <= 768;
 const mCanvas = document.getElementById('matrix-rain');
 if (mCanvas) {
     const mCtx = mCanvas.getContext('2d');
-    mCanvas.width = window.innerWidth;
-    mCanvas.height = window.innerHeight;
+    
+    // Logic for setting/resetting canvas dimensions
+    function setCanvasDimensions() {
+        mCanvas.width = window.innerWidth;
+        mCanvas.height = window.innerHeight;
+    }
+    setCanvasDimensions();
 
     const chars = "01XYZA".split("");
     const fontSize = 14;
-    const columns = mCanvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    let columns = mCanvas.width / fontSize;
+    let drops = [];
+
+    function initDrops() {
+        columns = mCanvas.width / fontSize;
+        drops = Array(Math.floor(columns)).fill(1);
+    }
+    initDrops();
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+        setCanvasDimensions();
+        initDrops();
+    });
     
     // REQUESTED ORDER: Blue, Green, White, Grey, Red
     const palette = [
@@ -79,6 +96,15 @@ if (artifactContainer) {
         renderer.render(scene, camera);
     }
     animateArtifact();
+
+    // Resize Handler for 3D
+    window.addEventListener('resize', () => {
+        const width = artifactContainer.clientWidth;
+        const height = artifactContainer.clientHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    });
 }
 
 // 3. INIT & ICONS
