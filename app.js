@@ -114,6 +114,7 @@ try {
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 } catch(e) {}
+
 // /// 4. AUDIO INTERFACE PROTOCOL ///
 const AudioEngine = {
     ctx: new (window.AudioContext || window.webkitAudioContext)(),
@@ -156,6 +157,18 @@ const AudioEngine = {
         osc.stop(this.ctx.currentTime + 0.3);
     }
 };
+
+// 5. CINEMATIC PRELOADER REMOVAL
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if(preloader) {
+            preloader.style.transition = 'opacity 0.8s ease';
+            preloader.style.opacity = '0';
+            setTimeout(() => preloader.remove(), 800);
+        }
+    }, 2000); // 2 Second forced immersion
+});
 
 // ATTACH TO DOM
 document.addEventListener('DOMContentLoaded', () => {
