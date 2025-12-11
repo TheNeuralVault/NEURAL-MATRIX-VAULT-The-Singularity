@@ -20,12 +20,12 @@
     <link rel="canonical" href="https://neuralmatrixvault.com/">
     <meta name="theme-color" content="#00f3ff">
 
-    <!-- SOCIAL WARFARE (OPEN GRAPH) -->
+    <!-- SOCIAL WARFARE (FIXED PATHS) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://neuralmatrixvault.com/">
     <meta property="og:title" content="NEURAL MATRIX VAULT | The Singularity">
     <meta property="og:description" content="We do not build websites. We build Sentient Digital Territories. Enter the Vault.">
-    <!-- UPDATED: Pointing to Root Directory with correct .jpeg extension -->
+    <!-- FIX: Root Directory + .jpeg extension -->
     <meta property="og:image" content="https://neuralmatrixvault.com/og-preview.jpeg">
 
     <!-- TWITTER DOMINANCE -->
@@ -33,18 +33,42 @@
     <meta property="twitter:url" content="https://neuralmatrixvault.com/">
     <meta property="twitter:title" content="NEURAL MATRIX VAULT">
     <meta property="twitter:description" content="Titanium & Glass. The Apex of Web Architecture.">
-    <!-- UPDATED: Pointing to Root Directory with correct .jpeg extension -->
+    <!-- FIX: Root Directory + .jpeg extension -->
     <meta property="twitter:image" content="https://neuralmatrixvault.com/og-preview.jpeg">
 
     <!-- /// 3. ASSETS /// -->
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/192/processor.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- /// 4. FAIL-SAFE STYLES /// -->
+    <!-- /// 4. SCHEMA TELEPATHY (JSON-LD) /// -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Neural Matrix Vault",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "2500.00",
+        "priceCurrency": "USD"
+      },
+      "description": "High-performance digital architecture and web development frameworks.",
+      "image": "https://neuralmatrixvault.com/og-preview.jpeg",
+      "author": {
+        "@type": "Organization",
+        "name": "Neural Matrix Agency",
+        "url": "https://neuralmatrixvault.com"
+      }
+    }
+    </script>
+
+    <!-- /// 5. FAIL-SAFE STYLES /// -->
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; }
         .glass-panel { border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 8px; background: #111; }
@@ -53,7 +77,7 @@
 </head>
 <body>
 
-<!-- /// 5. CINEMATIC PRELOADER /// -->
+<!-- /// 6. CINEMATIC PRELOADER /// -->
 <div id="preloader">
     <div class="loader-content">
         <div class="brand-glitch">NEURAL_MATRIX</div>
@@ -291,4 +315,4 @@
     }
 </script>
 </body>
-</html>
+                            </html>
