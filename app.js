@@ -2,12 +2,30 @@ console.log("%c/// NEURAL MATRIX VAULT: ONLINE ///", "color:#00f3ff; background:
 
 const isMobile = window.innerWidth <= 768;
 
-// 1. MULTI-COLOR MATRIX RAIN (Blue > Green > White > Grey > Red)
+/**
+ * /// 0. NEURAL CONFIGURATION LOADER ///
+ * Reads the Architect's design from the Builder.
+ * Fallback: Standard Titanium Protocol.
+ */
+const savedConfig = JSON.parse(localStorage.getItem('nmv_config')) || {
+    matrixColors: ['#00f3ff', '#00ff00', '#ffffff', '#808080', '#ff0000'], // Default Sequence
+    rainOpacity: 0.6,
+    coreColor: '#000000',
+    wireColor: '#00f3ff',
+    speed: 4
+};
+
+/**
+ * /// 1. MULTI-COLOR MATRIX RAIN ENGINE ///
+ * Dynamic Palette Injection
+ */
 const mCanvas = document.getElementById('matrix-rain');
 if (mCanvas) {
     const mCtx = mCanvas.getContext('2d');
     
-    // Logic for setting/resetting canvas dimensions
+    // Apply Architect's Opacity
+    mCanvas.style.opacity = savedConfig.rainOpacity;
+
     function setCanvasDimensions() {
         mCanvas.width = window.innerWidth;
         mCanvas.height = window.innerHeight;
@@ -25,20 +43,19 @@ if (mCanvas) {
     }
     initDrops();
 
-    // Resize Handler
     window.addEventListener('resize', () => {
         setCanvasDimensions();
         initDrops();
     });
     
-    // REQUESTED ORDER: Blue, Green, White, Grey, Red
-    const palette = [
-        {r:0,g:243,b:255},   // Blue
-        {r:0,g:255,b:0},     // Green
-        {r:255,g:255,b:255}, // White
-        {r:128,g:128,b:128}, // Grey
-        {r:255,g:0,b:0}      // Red
-    ];
+    // UTILITY: Hex to RGB conversion for the engine
+    function hexToRgb(hex) {
+        const bigint = parseInt(hex.substring(1), 16);
+        return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+    }
+
+    // LOAD PALETTE FROM CONFIG
+    const palette = savedConfig.matrixColors.map(hex => hexToRgb(hex));
     let time = 0;
 
     function drawMatrix() {
@@ -46,6 +63,7 @@ if (mCanvas) {
         mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
         
         time += 0.005;
+        // Cycle through the saved palette over time
         const colorIdx = Math.floor(time) % palette.length;
         const c = palette[colorIdx];
         
@@ -55,6 +73,8 @@ if (mCanvas) {
         for (let i = 0; i < drops.length; i++) {
             const text = chars[Math.floor(Math.random() * chars.length)];
             mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            // Randomize drop resets
             if (drops[i] * fontSize > mCanvas.height && Math.random() > 0.975) {
                 drops[i] = 0;
             }
@@ -65,7 +85,10 @@ if (mCanvas) {
     drawMatrix();
 }
 
-// 2. THE 3D ARTIFACT
+/**
+ * /// 2. THE SINGULARITY (3D ARTIFACT) ///
+ * Dynamic Geometry & Physics
+ */
 const artifactContainer = document.getElementById('singularity-vessel');
 if (artifactContainer) {
     const scene = new THREE.Scene();
@@ -76,28 +99,47 @@ if (artifactContainer) {
     renderer.setSize(artifactContainer.clientWidth, artifactContainer.clientHeight);
     artifactContainer.appendChild(renderer.domElement);
 
+    // DYNAMIC MATERIALS (From Config)
     const geometry = new THREE.IcosahedronGeometry(1.5, 0);
-    const material = new THREE.MeshPhongMaterial({ color: 0x000000, emissive: 0x111111, flatShading: true, shininess: 100 });
+    const material = new THREE.MeshPhongMaterial({ 
+        color: savedConfig.coreColor, 
+        emissive: 0x111111, 
+        flatShading: true, 
+        shininess: 100 
+    });
     const core = new THREE.Mesh(geometry, material);
     scene.add(core);
 
     const wireGeo = new THREE.IcosahedronGeometry(1.6, 1);
-    const wireMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.3 });
+    const wireMat = new THREE.MeshBasicMaterial({ 
+        color: savedConfig.wireColor, 
+        wireframe: true, 
+        transparent: true, 
+        opacity: 0.3 
+    });
     const cage = new THREE.Mesh(wireGeo, wireMat);
     scene.add(cage);
 
+    // LIGHTING SYSTEM
     const l1 = new THREE.PointLight(0x00f3ff, 2, 10); l1.position.set(3, 2, 3); scene.add(l1);
     const l2 = new THREE.PointLight(0xff0055, 2, 10); l2.position.set(-3, -2, 3); scene.add(l2);
 
+    // ANIMATION LOOP
     function animateArtifact() {
         requestAnimationFrame(animateArtifact);
-        core.rotation.y += 0.004; core.rotation.x -= 0.002;
-        cage.rotation.y -= 0.002;
+        
+        // Apply Rotational Velocity from Config
+        const spd = savedConfig.speed / 1000;
+
+        core.rotation.y += spd; 
+        core.rotation.x -= spd/2;
+        cage.rotation.y -= spd/2;
+        
         renderer.render(scene, camera);
     }
     animateArtifact();
 
-    // Resize Handler for 3D
+    // Responsive Handling
     window.addEventListener('resize', () => {
         const width = artifactContainer.clientWidth;
         const height = artifactContainer.clientHeight;
@@ -107,20 +149,37 @@ if (artifactContainer) {
     });
 }
 
-// 3. INIT & ICONS
+/**
+ * /// 3. SYSTEM INITIALIZATION ///
+ */
 try {
     lucide.createIcons();
-    const lenis = new Lenis({ duration: 1.2, smooth: true });
-    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
-} catch(e) {}
+    // Smooth Scroll Protocol (Lenis)
+    if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({ duration: 1.2, smooth: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+    }
+} catch(e) {
+    console.warn("System Warning: Auxiliary libraries not fully loaded.", e);
+}
 
-// /// 4. AUDIO INTERFACE PROTOCOL ///
+/**
+ * /// 4. AUDIO INTERFACE PROTOCOL ///
+ * Interaction Feedback System
+ */
 const AudioEngine = {
-    ctx: new (window.AudioContext || window.webkitAudioContext)(),
+    ctx: null,
     
-    // Generate a sci-fi "blip" on hover
+    init: function() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    },
+
+    // Hover: High Frequency Sine Wave
     hoverTone: function() {
+        this.init();
         if (this.ctx.state === 'suspended') this.ctx.resume();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -129,7 +188,7 @@ const AudioEngine = {
         osc.frequency.setValueAtTime(440, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
         
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime); // Low volume
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime); 
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
         
         osc.connect(gain);
@@ -138,8 +197,9 @@ const AudioEngine = {
         osc.stop(this.ctx.currentTime + 0.1);
     },
 
-    // Generate a "lock-in" sound on click
+    // Click: Low Frequency Square Wave (Mechanical Feel)
     clickTone: function() {
+        this.init();
         if (this.ctx.state === 'suspended') this.ctx.resume();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -158,7 +218,10 @@ const AudioEngine = {
     }
 };
 
-// 5. CINEMATIC PRELOADER REMOVAL
+/**
+ * /// 5. CINEMATIC PRELOADER SEQUENCE ///
+ * Enforces immersion.
+ */
 window.addEventListener('load', () => {
     setTimeout(() => {
         const preloader = document.getElementById('preloader');
@@ -167,12 +230,14 @@ window.addEventListener('load', () => {
             preloader.style.opacity = '0';
             setTimeout(() => preloader.remove(), 800);
         }
-    }, 2000); // 2 Second forced immersion
+    }, 2000); // 2-second system initialization delay
 });
 
-// ATTACH TO DOM
+/**
+ * /// 6. EVENT BINDING ///
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    const interactables = document.querySelectorAll('a, button, .cell');
+    const interactables = document.querySelectorAll('a, button, .cell, .btn-deploy');
     
     interactables.forEach(el => {
         el.addEventListener('mouseenter', () => AudioEngine.hoverTone());
