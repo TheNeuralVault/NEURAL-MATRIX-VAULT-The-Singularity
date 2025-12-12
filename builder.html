@@ -3,11 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEURAL CONSTRUCTOR | v3.0</title>
-    <link rel="stylesheet" href="builder.css">
+    <title>NEURAL CONSTRUCTOR | v4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- /// TITANIUM SKIN (EMBEDDED FOR INSTANT LOAD) /// -->
+    <style>
+        :root {
+            --bg-void: #020202;
+            --bg-panel: rgba(10, 10, 10, 0.95);
+            --border: #333;
+            --accent: #00f3ff;
+            --accent-dim: rgba(0, 243, 255, 0.1);
+            --font-head: 'Outfit', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        body { margin: 0; background: var(--bg-void); color: #fff; font-family: var(--font-head); overflow: hidden; }
+        * { box-sizing: border-box; user-select: none; }
+
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .interface-wrapper { display: flex; height: 100vh; width: 100%; position: relative; }
+
+        /* MOBILE NAV */
+        .mobile-nav { 
+            display: none; 
+            height: 60px; background: #000; border-bottom: 1px solid var(--border);
+            justify-content: space-between; align-items: center; padding: 0 20px;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
+        }
+        .mobile-nav button { background: none; border: none; color: #fff; display: flex; gap: 5px; align-items: center; cursor: pointer; }
+        .brand-mobile { font-family: var(--font-mono); color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+
+        /* SIDEBARS */
+        .sidebar-left, .sidebar-right { 
+            width: 320px; background: var(--bg-panel); border-right: 1px solid var(--border); 
+            display: flex; flex-direction: column; z-index: 40; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        .sidebar-right { border-left: 1px solid var(--border); border-right: none; }
+
+        .brand { 
+            padding: 25px; font-family: var(--font-mono); font-weight: 700; 
+            border-bottom: 1px solid var(--border); letter-spacing: 1px;
+            background: linear-gradient(90deg, rgba(0,243,255,0.05), transparent);
+        }
+        .highlight { color: var(--accent); text-shadow: 0 0 10px var(--accent-dim); }
+
+        /* TABS */
+        .tab-triggers { display: flex; border-bottom: 1px solid var(--border); }
+        .tab-btn { 
+            flex: 1; padding: 15px; background: none; border: none; color: #666; 
+            cursor: pointer; font-family: var(--font-mono); font-size: 0.7rem; 
+            transition: 0.3s; border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-dim); }
+
+        /* PANELS */
+        .left-panel { padding: 20px; display: none; overflow-y: auto; flex: 1; }
+        .left-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        .tool-category { 
+            font-size: 0.6rem; color: #666; margin: 25px 0 10px 0; 
+            font-family: var(--font-mono); font-weight: bold; text-transform: uppercase;
+        }
+
+        .draggable-item { 
+            padding: 15px; border: 1px solid var(--border); margin-bottom: 10px; background: rgba(255,255,255,0.03); 
+            border-radius: 4px; cursor: grab; display: flex; gap: 10px; align-items: center; 
+            font-size: 0.75rem; font-family: var(--font-mono); transition: 0.2s;
+        }
+        .draggable-item:hover { 
+            border-color: var(--accent); color: var(--accent); 
+            background: var(--accent-dim); transform: translateX(5px);
+        }
+
+        /* CANVAS */
+        .canvas-area { 
+            flex: 1; background: #050505; display: flex; flex-direction: column; 
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            position: relative;
+        }
+        .canvas-header { 
+            height: 60px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.8); 
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+            backdrop-filter: blur(5px);
+        }
+        .current-view { font-family: var(--font-mono); font-size: 0.75rem; color: #888; }
+
+        .device-toggles { display: flex; background: #111; border-radius: 4px; border: 1px solid var(--border); }
+        .device-btn { background: none; border: none; padding: 8px 12px; color: #666; cursor: pointer; }
+        .device-btn.active { background: var(--accent); color: #000; }
+
+        .btn-preview { 
+            background: transparent; border: 1px solid var(--accent); color: var(--accent); 
+            padding: 8px 15px; font-family: var(--font-mono); font-size: 0.7rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-preview:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-dim); }
+
+        .drop-zone { 
+            flex: 1; margin: 40px; background: #fff; overflow-y: auto; 
+            box-shadow: 0 0 100px rgba(0,0,0,0.5); color: #000; position: relative; transition: 0.3s;
+        }
+        .placeholder-msg { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            color: #ccc; font-family: var(--font-mono); pointer-events: none; border: 1px dashed #ccc; padding: 20px;
+        }
+
+        /* ELEMENTS */
+        .element { position: relative; transition: 0.2s; }
+        .element:hover { outline: 2px solid rgba(0,243,255,0.5); cursor: pointer; }
+        .element.selected { outline: 2px solid var(--accent); z-index: 10; }
+        
+        /* PROPERTIES PANEL */
+        .properties-panel { padding: 25px; overflow-y: auto; flex: 1; }
+        .panel-header { font-size: 0.7rem; color: #666; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; font-family: var(--font-mono); }
+        
+        .input-titanium { 
+            width: 100%; background: #080808; border: 1px solid var(--border); color: #fff; 
+            padding: 12px; font-family: var(--font-mono); margin-top: 5px; outline: none; border-radius: 4px;
+        }
+        .input-titanium:focus { border-color: var(--accent); }
+
+        .btn-upload {
+            width: 100%; background: #222; border: 1px dashed #666; color: #fff; padding: 15px; 
+            cursor: pointer; margin-bottom: 10px; display: flex; justify-content: center; gap: 10px;
+            font-family: var(--font-mono); font-size: 0.75rem; transition: 0.2s;
+        }
+        .btn-upload:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+        .color-wrapper { display: flex; align-items: center; gap: 10px; background: #080808; border: 1px solid var(--border); padding: 5px; border-radius: 4px; }
+        input[type="color"] { background: none; border: none; height: 30px; width: 30px; cursor: pointer; }
+
+        .action-bar { padding: 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
+        .sys-btn { 
+            flex: 1; background: #111; border: 1px solid var(--border); color: #888; 
+            padding: 10px; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; 
+        }
+        .sys-btn:hover { color: #fff; border-color: #fff; }
+        .sys-btn.primary { background: var(--accent); color: #000; border: none; font-weight: bold; }
+        .sys-btn.primary:hover { box-shadow: 0 0 20px var(--accent-dim); }
+
+        /* MOBILE RESPONSIVENESS */
+        @media (max-width: 768px) {
+            .interface-wrapper { flex-direction: column; padding-top: 60px; }
+            .mobile-nav { display: flex; }
+            
+            .sidebar-left { 
+                position: fixed; top: 60px; left: 0; bottom: 0; width: 85%; 
+                transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+            .sidebar-right { 
+                position: fixed; top: 60px; right: 0; bottom: 0; width: 85%; 
+                transform: translateX(100%); box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            }
+            
+            .mobile-open { transform: translateX(0); }
+            
+            .canvas-header { display: none; } 
+            .drop-zone { margin: 10px; min-height: 80vh; }
+        }
+
+        /* MODALS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; }
+        .modal-box { width: 90%; max-width: 600px; background: #111; padding: 30px; border: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,243,255,0.1); }
+        .modal-header { display: flex; justify-content: space-between; color: #fff; font-family: var(--font-mono); margin-bottom: 20px; }
+        .close-modal { background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
@@ -61,7 +235,7 @@
                 <div class="page-item" onclick="loadPage('about')"><i data-lucide="file"></i> ABOUT</div>
                 <div class="page-item" onclick="loadPage('services')"><i data-lucide="briefcase"></i> SERVICES</div>
                 <div class="page-item" onclick="loadPage('contact')"><i data-lucide="mail"></i> CONTACT</div>
-                <button class="btn-add-page">+ ADD PAGE</button>
+                <button class="btn-upload" style="margin-top:20px;">+ NEW PAGE</button>
             </div>
         </div>
     </aside>
@@ -78,7 +252,7 @@
         </div>
         
         <!-- DROP ZONE -->
-        <div id="workspace-container">
+        <div id="workspace-container" style="flex:1; display:flex; justify-content:center; overflow-y:auto;">
             <div id="workspace" class="drop-zone desktop-view">
                 <div class="placeholder-msg">/// DRAG COMPONENTS HERE TO INITIALIZE ///</div>
             </div>
@@ -96,37 +270,38 @@
         <div id="properties-panel" class="properties-panel">
             <div class="panel-header">ATTRIBUTES_MATRIX</div>
             
-            <div id="no-selection" class="info-msg">SELECT ARTIFACT TO MODIFY</div>
+            <div id="no-selection" style="text-align:center; color:#444; font-family:'Space Mono'; margin-top:50px; font-size:0.7rem;">
+                SELECT ARTIFACT TO MODIFY
+            </div>
 
             <div id="editor-controls" style="display:none;">
                 <!-- TEXT CONTROLS (CONTEXT AWARE) -->
                 <div class="control-group" id="ctrl-text">
-                    <label>CONTENT STRING</label>
+                    <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">CONTENT STRING</label>
                     <textarea id="prop-text" class="input-titanium" rows="3"></textarea>
                 </div>
                 
                 <!-- UPLOAD CONTROLS (CONTEXT AWARE) -->
                 <div class="control-group" id="ctrl-upload" style="display:none;">
-                    <label>MEDIA SOURCE</label>
+                    <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">MEDIA SOURCE</label>
                     <button class="btn-upload" onclick="triggerUpload()">UPLOAD FILE <i data-lucide="upload"></i></button>
                     <input type="text" id="prop-src" class="input-titanium" placeholder="OR PASTE URL">
                 </div>
 
                 <!-- GLOBAL STYLES -->
-                <div class="control-group">
-                    <label>BACKGROUND FREQUENCY</label>
+                <div class="control-group" style="margin-top:20px;">
+                    <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">BACKGROUND FREQUENCY</label>
                     <div class="color-wrapper">
                         <input type="color" id="prop-color">
-                        <span id="hex-val">#000000</span>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label>PADDING (Y-AXIS)</label>
-                    <input type="range" id="prop-padding" min="0" max="200" value="50">
+                <div class="control-group" style="margin-top:20px;">
+                    <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">PADDING (Y-AXIS)</label>
+                    <input type="range" id="prop-padding" min="0" max="200" value="50" style="width:100%;">
                 </div>
 
-                <button class="btn-delete" onclick="deleteSelected()">INCINERATE</button>
+                <button class="btn-upload" style="background:rgba(255,0,0,0.1); color:red; border-color:red; margin-top:30px;" onclick="deleteSelected()">INCINERATE</button>
             </div>
         </div>
     </aside>
@@ -136,17 +311,18 @@
 <!-- /// 4. MODAL OVERLAYS /// -->
 <div id="modal-analytics" class="modal-overlay">
     <div class="modal-box">
-        <div class="modal-header"><h3>REAL-TIME_ANALYTICS</h3><button onclick="closeModal('modal-analytics')">X</button></div>
+        <div class="modal-header"><h3>REAL-TIME_ANALYTICS</h3><button class="close-modal" onclick="closeModal('modal-analytics')">X</button></div>
         <div class="chart-container"><canvas id="trafficChart"></canvas></div>
     </div>
 </div>
 
 <div id="modal-settings" class="modal-overlay">
     <div class="modal-box">
-        <div class="modal-header"><h3>DOMAIN_CONTROLLER</h3><button onclick="closeModal('modal-settings')">X</button></div>
+        <div class="modal-header"><h3>DOMAIN_CONTROLLER</h3><button class="close-modal" onclick="closeModal('modal-settings')">X</button></div>
         <div class="settings-form">
-            <label>PRIMARY DOMAIN</label><input type="text" value="neuralmatrixvault.com" class="input-titanium" readonly>
-            <button class="btn-save">UPDATE_DNS_RECORDS</button>
+            <label style="color:#666; font-size:0.7rem; font-family:'Space Mono';">PRIMARY DOMAIN</label>
+            <input type="text" value="neuralmatrixvault.com" class="input-titanium" readonly>
+            <button class="sys-btn primary" style="width:100%; margin-top:20px;">UPDATE_DNS_RECORDS</button>
         </div>
     </div>
 </div>
