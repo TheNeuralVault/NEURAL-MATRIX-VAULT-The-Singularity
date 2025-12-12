@@ -1,21 +1,27 @@
 /**
- * NEURAL CONSTRUCTOR ENGINE v3.0 (ALCHEMIST EDITION)
+ * NEURAL CONSTRUCTOR ENGINE v4.0 (ALCHEMIST EDITION)
  * ARCHITECT: MAGNUS OPUS
- * CAPABILITIES: DRAG-DROP, RESIZE, FILE INGESTION
+ * CAPABILITIES: DRAG-DROP, RESIZE, FILE INGESTION, ANALYTICS
  */
 
 let selectedElement = null;
 let currentPage = 'home';
+let analyticsChart = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("/// NEURAL PHYSICS ENGINE: ONLINE ///");
+    console.log("%c/// NEURAL PHYSICS ENGINE: ONLINE ///", "color:#00f3ff; background:#000; padding:5px;");
+    
+    // 1. INITIALIZE SYSTEMS
     initDragAndDrop();
     initPropertiesListeners();
-    initFileDropPhysics(); // NEW: Desktop file drop
-    initAnalytics();
+    initFileDropPhysics();
+    initAnalytics(); // FIX: Now fully defined below
     
-    // Global File Listener (Button Click)
-    document.getElementById('global-upload').addEventListener('change', handleFileUploadInput);
+    // 2. GLOBAL LISTENERS
+    const uploadInput = document.getElementById('global-upload');
+    if(uploadInput) {
+        uploadInput.addEventListener('change', handleFileUploadInput);
+    }
 });
 
 // --- 1. DRAG AND DROP (UI ELEMENTS) ---
@@ -188,7 +194,6 @@ function initResizeLogic(el) {
                     if (width > 50) el.style.width = width + 'px';
                     if (height > 50) el.style.height = height + 'px';
                 }
-                // (Other corners omitted for brevity, SE is primary resizer for web blocks)
             }
 
             function stopResize() {
@@ -200,18 +205,15 @@ function initResizeLogic(el) {
 
 // --- 5. ASSET INGESTION (UPLOAD) ---
 
-// Triggered by Sidebar Button
 window.triggerUpload = function() {
     document.getElementById('global-upload').click();
 };
 
-// Handled by File Input (Click)
 function handleFileUploadInput(e) {
     const file = e.target.files[0];
     if(file) processFile(file);
 }
 
-// Handled by Drop Zone
 function handleFileIngestion(file, zone) {
     processFile(file, true, zone);
 }
@@ -270,18 +272,18 @@ function selectComponent(el) {
     } else {
         uploadCtrl.style.display = 'none';
         textCtrl.style.display = 'block';
-        document.getElementById('prop-text').value = el.innerText;
+        const txt = el.innerText || "";
+        document.getElementById('prop-text').value = txt;
     }
 }
 
 function initPropertiesListeners() {
     document.getElementById('prop-text').addEventListener('input', (e) => {
         if(selectedElement && !selectedElement.querySelector('img')) {
-             // Safe update avoiding removing resizers
              const contentNode = Array.from(selectedElement.childNodes).find(n => n.nodeType === 3 || (n.nodeType === 1 && !n.classList.contains('resizer')));
-             if(contentNode) contentNode.textContent = e.target.value;
-             else {
-                 // Fallback for complex structures: find a text container
+             if(contentNode) {
+                 contentNode.textContent = e.target.value;
+             } else {
                  const target = selectedElement.querySelector('h1, h2, h3, p, button, span');
                  if(target) target.innerText = e.target.value;
              }
@@ -347,7 +349,6 @@ window.openSettings = function() { document.getElementById('modal-settings').sty
 window.openAnalytics = function() { document.getElementById('modal-analytics').style.display = 'flex'; }
 window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
-// DEPLOY SIMULATION
 window.exportSite = function() {
     const btn = document.querySelector('.sys-btn.primary');
     const originalText = btn.innerText;
@@ -365,3 +366,48 @@ window.exportSite = function() {
         }, 2000);
     }, 1500);
 };
+
+// --- 8. ANALYTICS ENGINE (MISSING PROTOCOL RESTORED) ---
+function initAnalytics() {
+    const ctx = document.getElementById('trafficChart');
+    if(!ctx) return;
+
+    if(analyticsChart) analyticsChart.destroy();
+
+    analyticsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+            datasets: [{
+                label: 'NEURAL FLUX (TRAFFIC)',
+                data: [12, 19, 3, 5, 2, 3, 45],
+                borderColor: '#00f3ff',
+                backgroundColor: 'rgba(0, 243, 255, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#000',
+                pointBorderColor: '#00f3ff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#fff', font: { family: 'Space Mono' } }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#666', font: { family: 'Space Mono' } },
+                    grid: { color: '#222' }
+                },
+                y: {
+                    grid: { color: '#333' },
+                    ticks: { color: '#666', font: { family: 'Space Mono' } }
+                }
+            }
+        }
+    });
+}
