@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEURAL CONSTRUCTOR | v4.5</title>
+    <title>NEURAL CONSTRUCTOR | v5.0</title>
     
     <!-- /// GOOGLE TAG /// -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-P1PCVNCCE4"></script>
@@ -124,7 +124,6 @@
             flex: 1; margin: 40px; background: #fff; overflow-y: auto; 
             box-shadow: 0 0 100px rgba(0,0,0,0.5); color: #000; position: relative; transition: 0.3s;
         }
-        /* Mobile specific canvas sizing */
         .drop-zone.mobile-mode { max-width: 375px; border: 10px solid #333; border-radius: 20px; margin: 20px auto; }
         
         .placeholder-msg { 
@@ -150,7 +149,7 @@
             font-family: var(--font-mono); font-size: 0.75rem; transition: 0.2s;
         }
 
-        /* RESIZERS (TOUCH FRIENDLY) */
+        /* RESIZERS */
         .resizer { position: absolute; width: 20px; height: 20px; background: var(--accent); z-index: 20; display: none; border-radius: 50%; border: 2px solid #000; }
         .element.selected .resizer { display: block; }
         .resizer.nw { top: -10px; left: -10px; }
@@ -179,9 +178,28 @@
         /* UTILS */
         .page-item { padding: 10px; border: 1px solid #333; margin-bottom: 5px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
         .page-item.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; }
-        .modal-box { width: 90%; max-width: 600px; background: #111; padding: 30px; border: 1px solid var(--border); }
+        
+        .sys-btn { flex: 1; background: #111; border: 1px solid var(--border); color: #888; padding: 10px; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .sys-btn:hover { color: #fff; border-color: #fff; }
+        .sys-btn.primary { background: var(--accent); color: #000; border: none; font-weight: bold; }
+        .sys-btn.primary:hover { box-shadow: 0 0 20px var(--accent-dim); }
+
+        /* /// MODALS /// */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-box { width: 90%; max-width: 800px; background: #111; border: 1px solid var(--border); padding: 40px; position: relative; box-shadow: 0 0 50px rgba(0,243,255,0.1); }
+        
+        /* ANALYTICS CHART */
         .chart-container { height: 300px; width: 100%; }
+
+        /* PAYMENT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
+        .product-card { border: 1px solid #333; padding: 20px; cursor: pointer; transition: 0.3s; text-align: center; background: rgba(255,255,255,0.02); }
+        .product-card:hover { border-color: var(--accent); background: rgba(0,243,255,0.05); transform: translateY(-5px); }
+        .p-title { font-family: 'Space Mono'; color: #fff; margin-bottom: 10px; font-size: 0.9rem; font-weight: bold; }
+        .p-price { color: var(--accent); font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
+        .p-desc { color: #666; font-size: 0.7rem; font-family: 'Space Mono'; }
+
+        @media(max-width: 768px) { .product-grid { grid-template-columns: 1fr; } }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -261,8 +279,8 @@
     <!-- /// 3. RIGHT: PROPERTIES /// -->
     <aside class="sidebar-right" id="sidebar-right">
         <div style="padding:20px; border-bottom:1px solid #333;">
-            <button class="sys-btn primary" onclick="openAnalytics()" style="width:100%; margin-bottom:10px;">ANALYTICS</button>
-            <button class="sys-btn" onclick="exportSite()" style="width:100%;">DEPLOY SITE</button>
+            <button class="sys-btn primary" onclick="deploySequence()" style="width:100%; margin-bottom:10px;">DEPLOY SITE</button>
+            <button class="sys-btn" onclick="openAnalytics()" style="width:100%;">ANALYTICS</button>
         </div>
 
         <div id="properties-panel" class="properties-panel">
@@ -286,6 +304,7 @@
 
 </div>
 
+<!-- /// 4. ANALYTICS MODAL /// -->
 <div id="modal-analytics" class="modal-overlay">
     <div class="modal-box">
         <h3 style="font-family:'Space Mono'; margin-bottom:20px;">TRAFFIC_FLUX</h3>
@@ -294,8 +313,55 @@
     </div>
 </div>
 
+<!-- /// 5. PAYMENT INTERCEPTOR MODAL (NEW) /// -->
+<div id="payment-modal" class="modal-overlay">
+    <div class="modal-box" style="border-color: var(--accent);">
+        <button onclick="closePayment()" style="position:absolute; top:20px; right:20px; background:none; border:none; color:#666; cursor:pointer; font-size:1.5rem;">&times;</button>
+        
+        <div style="text-align:center; margin-bottom:30px;">
+            <i data-lucide="lock" style="color:var(--accent); width:50px; height:50px; margin-bottom:20px;"></i>
+            <h2 style="color:#fff; margin:0;">SELECT ARCHITECTURE LICENSE</h2>
+            <p style="color:#888; font-family:'Space Mono'; font-size:0.8rem; margin-top:10px;">CONFIRM PROTOCOL TO INITIATE DEPLOYMENT</p>
+        </div>
+        
+        <div class="product-grid">
+            <!-- NEURAL CORE -->
+            <div class="product-card" onclick="processLicense('core', 'https://buy.stripe.com/7sY7sL8dib6SbuvbPt8g001')">
+                <i data-lucide="cpu" style="color:var(--accent); width:30px; height:30px; margin-bottom:10px;"></i>
+                <div class="p-title">NEURAL CORE</div>
+                <div class="p-price">$2,500</div>
+                <div class="p-desc">Flagship 3D Architecture</div>
+            </div>
+
+            <!-- FLUX VELOCITY -->
+            <div class="product-card" onclick="processLicense('flux', 'https://buy.stripe.com/aFa3cv2SY3EqaqrcTx8g002')">
+                <i data-lucide="zap" style="color:#ff0055; width:30px; height:30px; margin-bottom:10px;"></i>
+                <div class="p-title">FLUX VELOCITY</div>
+                <div class="p-price">$2,500</div>
+                <div class="p-desc">High-Speed Landing Systems</div>
+            </div>
+
+            <!-- SIGNAL AMP -->
+            <div class="product-card" onclick="processLicense('signal', 'https://buy.stripe.com/14AcN5alq2Am9mn8Dh8g005')">
+                <i data-lucide="signal" style="color:#00ff00; width:30px; height:30px; margin-bottom:10px;"></i>
+                <div class="p-title">SIGNAL AMP</div>
+                <div class="p-price">$299/mo</div>
+                <div class="p-desc">AI-Driven SEO Protocol</div>
+            </div>
+            
+            <!-- DIGITAL FORTRESS -->
+            <div class="product-card" onclick="processLicense('fortress', 'https://buy.stripe.com/5kQ00jdxCdf0eGH6v98g00g')">
+                <i data-lucide="shield-check" style="color:#ffd700; width:30px; height:30px; margin-bottom:10px;"></i>
+                <div class="p-title">DIGITAL FORTRESS</div>
+                <div class="p-price">$500</div>
+                <div class="p-desc">Security & Encryption</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="builder.js"></script>
 <script>lucide.createIcons();</script>
 <script src="defense.js"></script>
 </body>
-                                                                                                         </html>
+</html>
