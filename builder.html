@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NEURAL CONSTRUCTOR | v4.0</title>
+    
+    <!-- /// GOOGLE TAG /// -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P1PCVNCCE4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P1PCVNCCE4');
+    </script>
+
+    <!-- /// FONTS & ICONS /// -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- /// TITANIUM SKIN (EMBEDDED FOR INSTANT LOAD) /// -->
+    <!-- /// TITANIUM SKIN /// -->
     <style>
         :root {
             --bg-void: #020202;
@@ -154,6 +165,14 @@
         .sys-btn.primary { background: var(--accent); color: #000; border: none; font-weight: bold; }
         .sys-btn.primary:hover { box-shadow: 0 0 20px var(--accent-dim); }
 
+        /* RESIZERS */
+        .resizer { position: absolute; width: 10px; height: 10px; background: var(--accent); z-index: 20; display: none; }
+        .element.selected .resizer { display: block; }
+        .resizer.nw { top: -5px; left: -5px; cursor: nw-resize; }
+        .resizer.ne { top: -5px; right: -5px; cursor: ne-resize; }
+        .resizer.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+        .resizer.se { bottom: -5px; right: -5px; cursor: se-resize; }
+
         /* MOBILE RESPONSIVENESS */
         @media (max-width: 768px) {
             .interface-wrapper { flex-direction: column; padding-top: 60px; }
@@ -169,7 +188,6 @@
             }
             
             .mobile-open { transform: translateX(0); }
-            
             .canvas-header { display: none; } 
             .drop-zone { margin: 10px; min-height: 80vh; }
         }
@@ -179,6 +197,7 @@
         .modal-box { width: 90%; max-width: 600px; background: #111; padding: 30px; border: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,243,255,0.1); }
         .modal-header { display: flex; justify-content: space-between; color: #fff; font-family: var(--font-mono); margin-bottom: 20px; }
         .close-modal { background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; }
+        .chart-container { height: 300px; width: 100%; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -275,13 +294,13 @@
             </div>
 
             <div id="editor-controls" style="display:none;">
-                <!-- TEXT CONTROLS (CONTEXT AWARE) -->
+                <!-- TEXT CONTROLS -->
                 <div class="control-group" id="ctrl-text">
                     <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">CONTENT STRING</label>
                     <textarea id="prop-text" class="input-titanium" rows="3"></textarea>
                 </div>
                 
-                <!-- UPLOAD CONTROLS (CONTEXT AWARE) -->
+                <!-- UPLOAD CONTROLS -->
                 <div class="control-group" id="ctrl-upload" style="display:none;">
                     <label style="display:block; font-size:0.6rem; color:var(--accent); margin-bottom:5px; font-family:'Space Mono';">MEDIA SOURCE</label>
                     <button class="btn-upload" onclick="triggerUpload()">UPLOAD FILE <i data-lucide="upload"></i></button>
@@ -327,10 +346,8 @@
     </div>
 </div>
 
-<!-- /// 5. ENGINES /// -->
 <script src="builder.js"></script>
 <script>lucide.createIcons();</script>
-<!-- SECURITY -->
 <script src="defense.js"></script>
 </body>
-</html>
+                    </html>
