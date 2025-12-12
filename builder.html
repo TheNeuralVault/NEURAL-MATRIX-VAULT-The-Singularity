@@ -31,7 +31,7 @@
             --font-mono: 'Space Mono', monospace;
         }
 
-        body { margin: 0; background: var(--bg-void); color: #fff; font-family: var(--font-head); overflow: hidden; }
+        body { margin: 0; background: var(--bg-void); color: #fff; font-family: var(--font-head); overflow: hidden; touch-action: none; /* Prevents scroll bounce */ }
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         /* SCROLLBARS */
@@ -41,20 +41,10 @@
 
         .interface-wrapper { display: flex; height: 100vh; width: 100%; position: relative; }
 
-        /* MOBILE NAV */
-        .mobile-nav { 
-            display: none; /* Hidden on Desktop */
-            height: 60px; background: #000; border-bottom: 1px solid var(--border);
-            justify-content: space-between; align-items: center; padding: 0 20px;
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 999;
-        }
-        .mobile-nav button { background: none; border: none; color: #fff; display: flex; gap: 5px; align-items: center; cursor: pointer; }
-        .brand-mobile { font-family: var(--font-mono); color: var(--accent); font-weight: bold; letter-spacing: 2px; }
-
         /* SIDEBARS */
         .sidebar-left, .sidebar-right { 
             width: 320px; background: var(--bg-panel); border-right: 1px solid var(--border); 
-            display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; z-index: 5000; /* HIGH Z-INDEX */
             backdrop-filter: blur(10px);
         }
         .sidebar-right { border-left: 1px solid var(--border); border-right: none; }
@@ -67,7 +57,7 @@
         }
 
         /* PANELS */
-        .left-panel { padding: 20px; overflow-y: auto; flex: 1; }
+        .left-panel { padding: 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
         .tool-category { font-size: 0.6rem; color: #666; margin: 25px 0 10px 0; font-family: var(--font-mono); font-weight: bold; text-transform: uppercase; }
 
         .draggable-item { 
@@ -91,97 +81,74 @@
             flex: 1; background: #050505; display: flex; flex-direction: column; 
             background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px);
             background-size: 40px 40px;
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; z-index: 1;
         }
         .canvas-header { 
             height: 60px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.8); 
             display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 90;
         }
 
-        .drop-zone { flex: 1; background: transparent; overflow: hidden; position: relative; width: 100%; height: 100%; }
+        .drop-zone { flex: 1; background: transparent; overflow: hidden; position: relative; width: 100%; height: 100%; touch-action: none; }
         .placeholder-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #333; font-family: var(--font-mono); pointer-events: none; border: 1px dashed #333; padding: 20px; }
 
         /* ELEMENTS */
-        .element { position: absolute; min-width: 50px; min-height: 50px; transition: box-shadow 0.2s; user-select: none; }
+        .element { position: absolute; min-width: 50px; min-height: 50px; transition: box-shadow 0.1s; user-select: none; touch-action: none; }
         .element:hover { outline: 1px dashed rgba(0,243,255,0.3); cursor: grab; }
         .element.selected { outline: 2px solid var(--accent); z-index: 1000 !important; cursor: grabbing; }
         .element img, .element video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
         /* PROPERTIES */
-        .properties-panel { padding: 25px; overflow-y: auto; flex: 1; }
+        .properties-panel { padding: 25px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
         .input-titanium { width: 100%; background: #080808; border: 1px solid var(--border); color: #fff; padding: 12px; font-family: var(--font-mono); margin-top: 5px; outline: none; border-radius: 4px; }
         .btn-upload { width: 100%; background: #222; border: 1px dashed #666; color: #fff; padding: 15px; cursor: pointer; margin-bottom: 10px; display: flex; justify-content: center; gap: 10px; font-family: var(--font-mono); font-size: 0.75rem; transition: 0.2s; }
 
         /* RESIZERS */
-        .resizer { position: absolute; width: 15px; height: 15px; background: var(--accent); z-index: 1001; display: none; border: 1px solid #000; }
+        .resizer { position: absolute; width: 30px; height: 30px; background: var(--accent); z-index: 1001; display: none; border: 2px solid #000; border-radius: 50%; /* Larger handle for mobile */ }
         .element.selected .resizer { display: block; }
-        .resizer.se { bottom: -5px; right: -5px; cursor: se-resize; }
+        .resizer.se { bottom: -15px; right: -15px; cursor: se-resize; }
 
         /* UTILS */
         .sys-btn { flex: 1; background: #111; border: 1px solid var(--border); color: #888; padding: 10px; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem;}
         .sys-btn.primary { background: var(--accent); color: #000; border: none; font-weight: bold; }
         
-        /* /// ADVANCED PAYMENT MODAL (SPECIFICATION UI) /// */
+        /* MODALS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: none; justify-content: center; align-items: center; }
-        .modal-box { 
-            width: 95%; max-width: 1000px; height: 80vh; 
-            background: #050505; border: 1px solid var(--border); 
-            display: flex; overflow: hidden; box-shadow: 0 0 50px rgba(0,243,255,0.1);
-        }
-        
-        /* Modal Left: List */
+        .modal-box { width: 95%; max-width: 1000px; height: 80vh; background: #050505; border: 1px solid var(--border); display: flex; overflow: hidden; box-shadow: 0 0 50px rgba(0,243,255,0.1); }
         .modal-sidebar { width: 300px; background: #0a0a0a; border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
-        .arch-btn { 
-            width: 100%; padding: 15px; text-align: left; background: #111; border: 1px solid #333; 
-            color: #888; margin-bottom: 10px; cursor: pointer; font-family: 'Space Mono'; transition: 0.3s;
-        }
+        .arch-btn { width: 100%; padding: 15px; text-align: left; background: #111; border: 1px solid #333; color: #888; margin-bottom: 10px; cursor: pointer; font-family: 'Space Mono'; transition: 0.3s; }
         .arch-btn:hover { border-color: var(--accent); color: #fff; }
         .arch-btn.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
-
-        /* Modal Right: Specs */
         .modal-content { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
         .spec-header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
         .spec-title { font-size: 2rem; color: #fff; font-weight: 800; margin: 0; }
         .spec-price { color: var(--accent); font-family: 'Space Mono'; font-size: 1.2rem; margin-top: 10px; }
-        
         .spec-section { margin-bottom: 30px; }
         .spec-label { font-family: 'Space Mono'; color: #666; font-size: 0.8rem; border-bottom: 1px solid #333; margin-bottom: 10px; padding-bottom: 5px; display: inline-block; }
         .spec-text { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
-        
         .spec-actions { margin-top: 40px; }
 
-        /* /// CRITICAL MOBILE FIX /// */
+        /* MOBILE NAV */
+        .mobile-nav { 
+            display: none; height: 60px; background: #000; border-bottom: 1px solid var(--border);
+            justify-content: space-between; align-items: center; padding: 0 20px;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 6000; /* SUPER HIGH Z */
+        }
+        .mobile-nav button { background: none; border: none; color: #fff; display: flex; gap: 5px; align-items: center; cursor: pointer; }
+        .brand-mobile { font-family: var(--font-mono); color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+
         @media(max-width: 768px) { 
             .interface-wrapper { flex-direction: column; padding-top: 60px; } 
-            
-            /* SHOW NAV */
             .mobile-nav { display: flex; }
-
-            /* SIDEBARS: EXIST BUT HIDDEN OFF-SCREEN */
             .sidebar-left, .sidebar-right { 
-                display: flex; /* DO NOT USE 'NONE' */
-                position: fixed; 
-                top: 60px; 
-                bottom: 0; 
-                width: 85%; 
-                background: #0a0a0a; 
-                z-index: 1000; 
-                transform: translateX(-100%); /* HIDE LEFT */
+                display: flex; position: fixed; top: 60px; bottom: 0; width: 85%; max-width: none;
+                background: #0a0a0a; z-index: 5500; transform: translateX(-100%); 
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .sidebar-right { 
-                right: 0; 
-                transform: translateX(100%); /* HIDE RIGHT */
-                border-left: 1px solid #333; 
-            }
-
-            /* OPEN STATES */
+            .sidebar-right { right: 0; transform: translateX(100%); border-left: 1px solid #333; border-right: none; }
             .mobile-open { transform: translateX(0) !important; }
-
-            /* MODAL ADJUSTMENTS */
+            .canvas-header { display: none; }
             .modal-box { flex-direction: column; height: 100vh; width: 100%; }
             .modal-sidebar { width: 100%; height: 150px; border-right: none; border-bottom: 1px solid var(--border); }
-            .canvas-header { display: none; }
         }
     </style>
 </head>
@@ -191,7 +158,6 @@
 <input type="file" id="media-upload-input" hidden accept="image/*,video/*" multiple>
 
 <div class="interface-wrapper">
-    
     <!-- MOBILE NAV -->
     <div class="mobile-nav">
         <button onclick="toggleSidebar('left')"><i data-lucide="menu"></i> TOOLS</button>
@@ -219,9 +185,7 @@
     <main class="canvas-area">
         <div class="canvas-header">
             <div class="brand" style="border:none; padding:0;">WORKSPACE</div>
-            <div style="display:flex; gap:10px;">
-                <button class="sys-btn" onclick="togglePreview()">PREVIEW</button>
-            </div>
+            <button class="sys-btn" onclick="togglePreview()">PREVIEW</button>
         </div>
         <div id="workspace" class="drop-zone">
             <div class="placeholder-msg">/// CLICK TOOLS TO SPAWN ///</div>
@@ -267,13 +231,11 @@
         </div>
 
         <!-- SPEC SHEET -->
-        <div class="modal-content" id="spec-container">
-            <!-- DYNAMIC CONTENT INJECTED HERE BY JS -->
-        </div>
+        <div class="modal-content" id="spec-container"></div>
     </div>
 </div>
 
 <script src="builder.js"></script>
 <script>lucide.createIcons();</script>
 </body>
-</html>
+                </html>
