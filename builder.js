@@ -1,155 +1,39 @@
 /**
- * NEURAL CONSTRUCTOR v8.0 (SPECIFICATION EDITION)
+ * NEURAL CONSTRUCTOR v9.0 (POINTER EVENTS EDITION)
  * ARCHITECT: MAGNUS OPUS
- * PROTOCOLS: INFINITE MEDIA, OMNI-PHYSICS, PRODUCT INTELLIGENCE
+ * PROTOCOLS: OMNI-DEVICE PHYSICS (Touch/Mouse/Stylus Unified)
  */
 
-// /// 1. PRODUCT INTELLIGENCE DATABASE ///
-const PRODUCT_CATALOG = {
-    core: {
-        title: "THE NEURAL CORE",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/7sY7sL8dib6SbuvbPt8g001",
-        mission: "Complete digital transformation. We replace standard sites with high-speed, futuristic platforms.<br>• <strong>Speed:</strong> Loads instantly on any device.<br>• <strong>Visuals:</strong> Cinema-grade 3D effects for premium status.<br>• <strong>Ranking:</strong> Architected to dominate Google results.",
-        tech: "• <strong>Engine:</strong> Custom WebGL & Three.js hardware acceleration.<br>• <strong>Host:</strong> High-Frequency Edge CDN (<100ms latency).<br>• <strong>SEO:</strong> AI-Structured Semantic Schema & JSON-LD.<br>• <strong>Security:</strong> Enterprise SSL & DDoS Mitigation."
-    },
-    flux: {
-        title: "FLUX VELOCITY",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/aFa3cv2SY3EqaqrcTx8g002",
-        mission: "High-speed retail architecture. We build kinetic, moving landing pages designed to capture attention and sell immediately.<br>• <strong>Speed:</strong> Instant load times to maximize conversion rates.<br>• <strong>Visuals:</strong> Motion graphics that keep users engaged.<br>• <strong>Best For:</strong> Product drops, portfolios, and sales pages.",
-        tech: "• <strong>Engine:</strong> Lightweight Single Page Application (SPA).<br>• <strong>Motion:</strong> GSAP High-Performance Animation (60fps).<br>• <strong>Assets:</strong> WebP Next-Gen Compression.<br>• <strong>UI:</strong> Fluid Reactive Grid System."
-    },
-    aero: {
-        title: "AERO PROTOCOL",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/bJe28r79e3Eq7efcTx8g003",
-        mission: "Corporate precision. We build clean, 'Swiss-style' digital headquarters that project absolute stability.<br>• <strong>Clarity:</strong> Minimalist design that organizes complex data perfectly.<br>• <strong>Trust:</strong> Signals authority to high-value partners.<br>• <strong>Best For:</strong> Agencies, Firms, & Consultants.",
-        tech: "• <strong>Structure:</strong> Asymmetrical CSS Grid Architecture.<br>• <strong>Type:</strong> Variable Font Rendering & Optical Sizing.<br>• <strong>Core:</strong> Static Site Generation (SSG) for 100% uptime.<br>• <strong>Standards:</strong> WCAG 2.1 AA Accessibility."
-    },
-    nexus: {
-        title: "NEXUS STREAM",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/3cIeVd2SY5My1TV4n18g00c",
-        mission: "Deploy your Mobile Command Center. The Nexus Stream is a sovereign dashboard architecture designed for absolute creator control. Features mobile-first logic, high-speed link aggregation, and a zero-latency interface. Own your traffic.",
-        tech: "• <strong>Core:</strong> PWA (Progressive Web App) Framework.<br>• <strong>Sync:</strong> Real-time API Aggregation.<br>• <strong>Mobile:</strong> Touch-Optimized Physics Engine."
-    },
-    cipher: {
-        title: "CIPHER PROTOCOL",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/3cIeVddxCdf04233iX8g00d",
-        mission: "The Granite Wealth Architecture. Cipher Protocol is a fortress-grade environment engineered for FinTech and Web3 ventures. Features military-grade encryption visualization, immutable ledger aesthetics, and absolute trust-based design patterns.",
-        tech: "• <strong>Security:</strong> AES-256 Encryption Visualization.<br>• <strong>Data:</strong> Real-time Ticker & API Integration.<br>• <strong>Compliance:</strong> GDPR & SOC2 Ready Framework."
-    },
-    prism: {
-        title: "PRISM SaaS",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/4gM8wP65afn8buv06L8g00e",
-        mission: "Liquid Intelligence made manifest. Prism SaaS is the apex UI/UX framework for AI dashboards and complex software platforms. Includes adaptive data visualization, neurological user flows, and a seamless glass-morphic interface.",
-        tech: "• <strong>Framework:</strong> React/Vue Hybrid Architecture.<br>• <strong>Data:</strong> D3.js & WebGL Visualization.<br>• <strong>UX:</strong> Adaptive Dark/Light Mode & Focus States."
-    },
-    omega: {
-        title: "OMEGA REALITY",
-        price: "$2,500.00",
-        link: "https://buy.stripe.com/14A9AT79ea2OdCDf1F8g00f",
-        mission: "Beyond the Screen. Omega Reality is the Singularity of web architecture. A fully immersive Spatial Computing environment featuring high-fidelity WebGL rendering, VR-ready infrastructure, and volumetric design. The ultimate digital flex.",
-        tech: "• <strong>Core:</strong> Three.js & WebXR Integration.<br>• <strong>Render:</strong> Ray-Tracing Simulation.<br>• <strong>Input:</strong> Spatial Hand Tracking & Gaze Detection."
-    }
-};
-
 let selectedElement = null;
-let uploadedMedia = [];
+let uploadedMedia = []; 
 let zIndexCounter = 100;
-let currentSpec = 'core';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("%c/// NEURAL PHYSICS: OMNI-DEVICE ACTIVE ///", "color:#00f3ff; background:#000; padding:5px;");
+    console.log("%c/// NEURAL PHYSICS: POINTER PROTOCOL ACTIVE ///", "color:#00f3ff; background:#000; padding:5px;");
     
     // Listeners
     const mediaInput = document.getElementById('media-upload-input');
     if(mediaInput) mediaInput.addEventListener('change', handleMediaUpload);
     
-    document.getElementById('prop-text').addEventListener('input', updateProps);
-    document.getElementById('prop-color').addEventListener('input', updateProps);
-    document.getElementById('prop-z').addEventListener('input', updateProps);
+    // Property Listeners
+    const pText = document.getElementById('prop-text');
+    const pColor = document.getElementById('prop-color');
+    const pZ = document.getElementById('prop-z');
     
-    // Global deselect (Touch & Click)
+    if(pText) pText.addEventListener('input', updateProps);
+    if(pColor) pColor.addEventListener('input', updateProps);
+    if(pZ) pZ.addEventListener('input', updateProps);
+    
+    // Global deselect
     const ws = document.getElementById('workspace');
-    ws.addEventListener('click', (e) => { if(e.target.id === 'workspace') deselectAll(); });
-    ws.addEventListener('touchstart', (e) => { if(e.target.id === 'workspace') deselectAll(); }, {passive: true});
-
-    // Init Spec Logic
-    loadSpec('core');
+    if(ws) {
+        ws.addEventListener('pointerdown', (e) => { 
+            if(e.target.id === 'workspace') deselectAll(); 
+        });
+    }
 });
 
-// /// 2. SPEC SHEET LOGIC (THE NEW UI) ///
-
-window.loadSpec = function(id) {
-    currentSpec = id;
-    const data = PRODUCT_CATALOG[id];
-
-    // Highlight Button
-    const buttons = document.querySelectorAll('.arch-btn');
-    buttons.forEach(btn => {
-        // Simple string matching for active class since we don't have IDs on buttons
-        // Ideally update builder.html to include IDs or data attributes
-        if(btn.onclick.toString().includes(id)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-    
-    // Render Content
-    const container = document.getElementById('spec-container');
-    if(container) {
-        container.innerHTML = `
-            <div class="spec-header">
-                <h2 class="spec-title">${data.title}</h2>
-                <div class="spec-price">${data.price}</div>
-            </div>
-            
-            <div class="spec-section">
-                <div class="spec-label">/// THE MISSION</div>
-                <div class="spec-text">${data.mission}</div>
-            </div>
-
-            <div class="spec-section">
-                <div class="spec-label">/// THE TECH</div>
-                <div class="spec-text">${data.tech}</div>
-            </div>
-
-            <div class="spec-actions">
-                <button class="sys-btn primary" onclick="processPayment('${id}')" style="width:100%; padding:20px; font-size:1rem;">
-                    INITIATE TRANSFER [${data.price}]
-                </button>
-            </div>
-        `;
-    }
-};
-
-window.deploySequence = function() {
-    const build = document.getElementById('workspace').innerHTML;
-    if(!build || build.includes('SPAWN')) {
-        alert("VOID DETECTED. CONSTRUCT ARTIFACTS BEFORE DEPLOYMENT.");
-        return;
-    }
-    // Save the build
-    localStorage.setItem('nmv_pending_build', build);
-    // Open the Spec Sheet
-    document.getElementById('payment-modal').style.display = 'flex';
-};
-
-window.processPayment = function(id) {
-    const data = PRODUCT_CATALOG[id];
-    localStorage.setItem('nmv_active_license', id);
-    // Redirect
-    window.location.href = data.link;
-};
-
-window.closePayment = () => document.getElementById('payment-modal').style.display = 'none';
-
-// /// 3. INFINITE MEDIA DOCK ///
+// /// 1. INFINITE MEDIA DOCK ///
 
 window.triggerMediaUpload = function() {
     document.getElementById('media-upload-input').click();
@@ -183,12 +67,18 @@ function renderThumbnail(src, type) {
         thumb.style.backgroundImage = `url(${src})`;
     }
     
-    thumb.onclick = () => spawnMedia(src, type);
+    // Use onclick for thumbnails (safe standard)
+    thumb.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        spawnMedia(src, type);
+    };
+    
     grid.insertBefore(thumb, grid.firstElementChild);
     if(window.lucide) lucide.createIcons();
 }
 
-// /// 4. SPAWN LOGIC (ABSOLUTE) ///
+// /// 2. SPAWN LOGIC (CENTER SCREEN CALCULATION) ///
 
 window.spawnMedia = function(src, type) {
     const el = createBaseElement();
@@ -200,4 +90,243 @@ window.spawnMedia = function(src, type) {
         el.style.width = '200px'; el.style.height = '200px';
     }
     addToWorkspace(el);
-    if(wind
+    closeMobileSidebar();
+};
+
+window.spawnBlock = function(type) {
+    const el = createBaseElement();
+    switch(type) {
+        case 'text':
+            el.innerText = 'TAP TO EDIT';
+            el.style.color = '#fff'; el.style.fontSize = '1.2rem'; el.style.padding = '10px';
+            break;
+        case 'box':
+            el.style.backgroundColor = '#111'; el.style.border = '1px solid #333';
+            el.style.width = '200px'; el.style.height = '200px';
+            break;
+        case 'button':
+            el.innerHTML = '<button style="pointer-events:none; background:#00f3ff; border:none; padding:10px 20px; font-weight:bold;">ACTION</button>';
+            break;
+        case 'hero':
+            el.innerHTML = '<h1 style="font-size:2rem; margin:0;">HERO</h1><p>Subtitle</p>';
+            el.style.textAlign = 'center'; el.style.padding = '30px'; el.style.border = '1px dashed #444';
+            el.style.width = '300px';
+            break;
+    }
+    addToWorkspace(el);
+    closeMobileSidebar();
+};
+
+function createBaseElement() {
+    const el = document.createElement('div');
+    el.className = 'element';
+    
+    // CALCULATE CENTER OF VIEWPORT
+    const viewportX = window.innerWidth;
+    const viewportY = window.innerHeight;
+    
+    // Default to center minus half element size (approx)
+    el.style.left = (viewportX / 2 - 50) + 'px';
+    el.style.top = (viewportY / 2 - 50) + 'px';
+    el.style.zIndex = zIndexCounter++;
+    el.style.touchAction = "none"; // CRITICAL: PREVENTS SCROLLING WHILE DRAGGING
+    
+    // Init Physics
+    initPointerDrag(el);
+    
+    // Selection
+    el.addEventListener('pointerdown', (e) => {
+        // Don't select if hitting resizer
+        if(!e.target.classList.contains('resizer')) {
+            e.stopPropagation();
+            selectComponent(el);
+        }
+    });
+
+    return el;
+}
+
+function addToWorkspace(el) {
+    const ws = document.getElementById('workspace');
+    const ph = ws.querySelector('.placeholder-msg');
+    if(ph) ph.remove();
+    
+    // Inject Resizer
+    const r = document.createElement('div');
+    r.className = 'resizer se';
+    el.appendChild(r);
+    initPointerResize(el, r);
+
+    ws.appendChild(el);
+    selectComponent(el);
+}
+
+// /// 3. PHYSICS ENGINE (POINTER EVENTS) ///
+
+function initPointerDrag(el) {
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    el.addEventListener('pointerdown', (e) => {
+        if(e.target.classList.contains('resizer')) return;
+        
+        e.preventDefault(); // Prevent text selection/scrolling
+        el.setPointerCapture(e.pointerId); // Lock target
+        
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialLeft = el.offsetLeft;
+        initialTop = el.offsetTop;
+        
+        el.style.cursor = 'grabbing';
+    });
+
+    el.addEventListener('pointermove', (e) => {
+        if(!isDragging) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        el.style.left = `${initialLeft + dx}px`;
+        el.style.top = `${initialTop + dy}px`;
+    });
+
+    el.addEventListener('pointerup', (e) => {
+        isDragging = false;
+        el.style.cursor = 'grab';
+        el.releasePointerCapture(e.pointerId);
+    });
+}
+
+function initPointerResize(el, resizer) {
+    let isResizing = false;
+    let startX, startY, startW, startH;
+
+    resizer.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        resizer.setPointerCapture(e.pointerId);
+        
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = parseInt(document.defaultView.getComputedStyle(el).width, 10);
+        startH = parseInt(document.defaultView.getComputedStyle(el).height, 10);
+    });
+
+    resizer.addEventListener('pointermove', (e) => {
+        if(!isResizing) return;
+        
+        const width = startW + (e.clientX - startX);
+        const height = startH + (e.clientY - startY);
+        
+        el.style.width = `${width}px`;
+        el.style.height = `${height}px`;
+    });
+
+    resizer.addEventListener('pointerup', (e) => {
+        isResizing = false;
+        resizer.releasePointerCapture(e.pointerId);
+    });
+}
+
+// /// 4. UTILITIES ///
+
+function selectComponent(el) {
+    if(selectedElement) selectedElement.classList.remove('selected');
+    selectedElement = el;
+    el.classList.add('selected');
+    el.style.zIndex = zIndexCounter++;
+
+    const noSel = document.getElementById('no-selection');
+    const controls = document.getElementById('editor-controls');
+    
+    if(noSel) noSel.style.display = 'none';
+    if(controls) controls.style.display = 'block';
+    
+    // Populate properties
+    const pText = document.getElementById('prop-text');
+    const pZ = document.getElementById('prop-z');
+    
+    if(el.childNodes[0] && el.childNodes[0].nodeType === 3) {
+         if(pText) pText.value = el.innerText;
+    } else {
+         if(pText) pText.value = "";
+    }
+    if(pZ) pZ.value = el.style.zIndex;
+
+    // Mobile: Show properties sidebar if screen is small
+    if(window.innerWidth <= 768) {
+        document.getElementById('sidebar-right').classList.add('mobile-open');
+    }
+}
+
+function deselectAll() {
+    if(selectedElement) selectedElement.classList.remove('selected');
+    selectedElement = null;
+    document.getElementById('editor-controls').style.display = 'none';
+    document.getElementById('no-selection').style.display = 'block';
+}
+
+function updateProps(e) {
+    if(!selectedElement) return;
+    const val = e.target.value;
+    const id = e.target.id;
+
+    if(id === 'prop-text') {
+        if(!selectedElement.querySelector('img') && !selectedElement.querySelector('video')) {
+           selectedElement.innerText = val;
+           // Re-inject resizer
+           const r = document.createElement('div');
+           r.className = 'resizer se';
+           selectedElement.appendChild(r);
+           initPointerResize(selectedElement, r);
+        }
+    } else if(id === 'prop-color') {
+        selectedElement.style.backgroundColor = val;
+    } else if(id === 'prop-z') {
+        selectedElement.style.zIndex = val;
+    }
+}
+
+function deleteSelected() {
+    if(selectedElement) {
+        selectedElement.remove();
+        deselectAll();
+    }
+}
+
+// /// 5. DEPLOYMENT & PAYMENT ///
+
+window.deploySequence = function() {
+    const build = document.getElementById('workspace').innerHTML;
+    if(!build || build.includes('SPAWN')) {
+        alert("VOID DETECTED. SPAWN ARTIFACTS.");
+        return;
+    }
+    localStorage.setItem('nmv_pending_build', build);
+    document.getElementById('payment-modal').style.display = 'flex';
+};
+
+window.closePayment = () => document.getElementById('payment-modal').style.display = 'none';
+window.processLicense = (code, url) => {
+    localStorage.setItem('nmv_active_license', code);
+    window.location.href = url;
+};
+
+// UI Toggles
+window.toggleSidebar = function(side) {
+    document.getElementById(`sidebar-${side}`).classList.toggle('mobile-open');
+};
+
+function closeMobileSidebar() {
+    if(window.innerWidth <= 768) {
+        document.getElementById('sidebar-left').classList.remove('mobile-open');
+    }
+}
+
+window.togglePreview = () => {
+    document.body.classList.toggle('preview-active');
+    alert("PREVIEW MODE. CLICK AGAIN TO EDIT.");
+};
