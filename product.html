@@ -1,163 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONFIRM PROTOCOL | NMV</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INFINITE STUDIOS // PLATINUM EDITION</title>
     
-    <!-- /// GOOGLE TAG /// -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P1PCVNCCE4"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-P1PCVNCCE4');
-    </script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <style>
-        :root { --accent: #00f3ff; --bg: #020202; --panel: rgba(10,10,10,0.8); --border: #333; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        
-        /* HUD HEADER */
-        .hud-header { padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
-        .brand { font-family: 'Space Mono'; font-weight: bold; font-size: 1.2rem; letter-spacing: 2px; }
-        .brand span { color: var(--accent); }
-        .back-link { color: #666; text-decoration: none; font-family: 'Space Mono'; font-size: 0.8rem; transition: 0.3s; }
-        .back-link:hover { color: #fff; }
-
-        /* MAIN INTEL CONTAINER */
-        .intel-container { max-width: 900px; margin: 60px auto; padding: 0 20px; animation: fadeIn 1s ease; }
-        
-        .status-badge { display: inline-block; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; font-family: 'Space Mono'; font-size: 0.7rem; margin-bottom: 20px; background: rgba(0, 243, 255, 0.05); }
-        
-        h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin: 0 0 40px 0; line-height: 1; text-transform: uppercase; }
-        
-        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        
-        .spec-box { border-top: 1px solid var(--border); padding-top: 20px; }
-        .label { font-family: 'Space Mono'; color: #666; display: block; margin-bottom: 15px; font-size: 0.9rem; }
-        p { color: #ccc; line-height: 1.6; font-size: 1rem; margin: 0; }
-        
-        /* ACTION BAR */
-        .action-bar { margin-top: 60px; padding: 30px; border: 1px solid var(--border); background: var(--panel); display: flex; justify-content: space-between; align-items: center; border-radius: 4px; }
-        .price-tag { font-family: 'Space Mono'; font-size: 1.5rem; color: #fff; font-weight: bold; }
-        .sub-price { display: block; font-size: 0.7rem; color: #666; font-weight: normal; }
-        
-        .btn-launch { 
-            background: var(--accent); color: #000; padding: 15px 40px; font-weight: bold; 
-            font-family: 'Space Mono'; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
-            transition: 0.3s;
-        }
-        .btn-launch:hover { box-shadow: 0 0 30px var(--accent); transform: scale(1.02); }
-
-        @media(max-width: 768px) {
-            .grid-layout { grid-template-columns: 1fr; gap: 30px; }
-            .action-bar { flex-direction: column; gap: 20px; text-align: center; }
-            .btn-launch { width: 100%; justify-content: center; }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <!-- PURE METADATA: NO TRACKING -->
+    <meta name="description" content="The Alpha Protocol. Infinite Generative Cinema.">
+    <meta name="theme-color" content="#E5E4E2"> <!-- Platinum Hex -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ATMOSPHERIC LAYERS -->
+    <div id="grain"></div>
+    <div id="vignette"></div>
 
-    <header class="hud-header">
-        <div class="brand">NEURAL<span>_VAULT</span></div>
-        <a href="index.html" class="back-link">// ABORT MISSION</a>
-    </header>
+    <main id="app">
+        <!-- HEADS UP DISPLAY -->
+        <header>
+            <div class="brand">NEURAL://VAULT <span class="edition">PLATINUM</span></div>
+            <div class="hud">
+                <span id="sysStatus">SYSTEM: STANDBY</span>
+                <span id="liveIndicator">● BROADCASTING</span>
+            </div>
+        </header>
 
-    <div class="intel-container">
-        <div id="dynamic-content">
-            <!-- INJECTED BY JS -->
-            <div class="status-badge">LOADING DATA...</div>
-        </div>
-    </div>
-
-    <script>
-        // /// PRODUCT INTELLIGENCE DATABASE ///
-        const CATALOG = {
-            'core': {
-                title: "THE NEURAL CORE",
-                price: "$2,500",
-                mission: "Complete digital transformation. We replace standard sites with high-speed, futuristic platforms.<br><br>• <strong>Speed:</strong> Loads instantly on any device.<br>• <strong>Visuals:</strong> Cinema-grade 3D effects for premium status.<br>• <strong>Ranking:</strong> Architected to dominate Google results.",
-                tech: "• <strong>Engine:</strong> Custom WebGL & Three.js hardware acceleration.<br>• <strong>Host:</strong> High-Frequency Edge CDN (<100ms latency).<br>• <strong>SEO:</strong> AI-Structured Semantic Schema & JSON-LD.<br>• <strong>Security:</strong> Enterprise SSL & DDoS Mitigation."
-            },
-            'flux': {
-                title: "FLUX VELOCITY",
-                price: "$2,500",
-                mission: "High-speed retail architecture. We build kinetic, moving landing pages designed to capture attention and sell immediately.<br><br>• <strong>Speed:</strong> Instant load times to maximize conversion rates.<br>• <strong>Visuals:</strong> Motion graphics that keep users engaged.<br>• <strong>Best For:</strong> Product drops, portfolios, and sales pages.",
-                tech: "• <strong>Engine:</strong> Lightweight Single Page Application (SPA).<br>• <strong>Motion:</strong> GSAP High-Performance Animation (60fps).<br>• <strong>Assets:</strong> WebP Next-Gen Compression.<br>• <strong>UI:</strong> Fluid Reactive Grid System."
-            },
-            'aero': {
-                title: "AERO PROTOCOL",
-                price: "$2,500",
-                mission: "Corporate precision. We build clean, 'Swiss-style' digital headquarters that project absolute stability.<br><br>• <strong>Clarity:</strong> Minimalist design that organizes complex data perfectly.<br>• <strong>Trust:</strong> Signals authority to high-value partners.<br>• <strong>Best For:</strong> Agencies, Firms, & Consultants.",
-                tech: "• <strong>Structure:</strong> Asymmetrical CSS Grid Architecture.<br>• <strong>Type:</strong> Variable Font Rendering & Optical Sizing.<br>• <strong>Core:</strong> Static Site Generation (SSG) for 100% uptime.<br>• <strong>Standards:</strong> WCAG 2.1 AA Accessibility."
-            },
-            'nexus': {
-                title: "NEXUS STREAM",
-                price: "$2,500",
-                mission: "Deploy your Mobile Command Center. The Nexus Stream is a sovereign dashboard architecture designed for absolute creator control. Features mobile-first logic, high-speed link aggregation, and a zero-latency interface. Own your traffic.",
-                tech: "• <strong>Core:</strong> PWA (Progressive Web App) Framework.<br>• <strong>Sync:</strong> Real-time API Aggregation.<br>• <strong>Mobile:</strong> Touch-Optimized Physics Engine."
-            },
-            'cipher': {
-                title: "CIPHER PROTOCOL",
-                price: "$2,500",
-                mission: "The Granite Wealth Architecture. Cipher Protocol is a fortress-grade environment engineered for FinTech and Web3 ventures. Features military-grade encryption visualization, immutable ledger aesthetics, and absolute trust-based design patterns.",
-                tech: "• <strong>Security:</strong> AES-256 Encryption Visualization.<br>• <strong>Data:</strong> Real-time Ticker & API Integration.<br>• <strong>Compliance:</strong> GDPR & SOC2 Ready Framework."
-            },
-            'prism': {
-                title: "PRISM SaaS",
-                price: "$2,500",
-                mission: "Liquid Intelligence made manifest. Prism SaaS is the apex UI/UX framework for AI dashboards and complex software platforms. Includes adaptive data visualization, neurological user flows, and a seamless glass-morphic interface.",
-                tech: "• <strong>Framework:</strong> React/Vue Hybrid Architecture.<br>• <strong>Data:</strong> D3.js & WebGL Visualization.<br>• <strong>UX:</strong> Adaptive Dark/Light Mode & Focus States."
-            },
-            'omega': {
-                title: "OMEGA REALITY",
-                price: "$2,500",
-                mission: "Beyond the Screen. Omega Reality is the Singularity of web architecture. A fully immersive Spatial Computing environment featuring high-fidelity WebGL rendering, VR-ready infrastructure, and volumetric design. The ultimate digital flex.",
-                tech: "• <strong>Core:</strong> Three.js & WebXR Integration.<br>• <strong>Render:</strong> Ray-Tracing Simulation.<br>• <strong>Input:</strong> Spatial Hand Tracking & Gaze Detection."
-            }
-        };
-
-        // PARSE ID
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id') || 'core';
-        const data = CATALOG[id];
-
-        // RENDER
-        const container = document.getElementById('dynamic-content');
-        
-        container.innerHTML = `
-            <div class="status-badge">/// TARGET ACQUIRED: ${id.toUpperCase()}</div>
-            <h1>${data.title}</h1>
+        <!-- VISUAL CORE: DOUBLE BUFFERING SYSTEM -->
+        <div id="stage">
+            <!-- Layer A and B swap opacity for gapless transitions -->
+            <img id="layerA" class="active" src="https://image.pollinations.ai/prompt/static%20noise?width=720&height=1280&nologo=true">
+            <img id="layerB" src="https://image.pollinations.ai/prompt/static%20noise?width=720&height=1280&nologo=true">
             
-            <div class="grid-layout">
-                <div class="spec-box">
-                    <span class="label">/// THE MISSION</span>
-                    <p>${data.mission}</p>
-                </div>
-                <div class="spec-box">
-                    <span class="label">/// THE TECH</span>
-                    <p>${data.tech}</p>
-                </div>
+            <div id="subtitleContainer">
+                <div id="subtitleBox">Awaiting Platinum Injection...</div>
             </div>
+        </div>
 
-            <div class="action-bar">
-                <div class="price-block">
-                    <div class="price-tag">${data.price}</div>
-                    <span class="sub-price">PROFESSIONAL LICENSE</span>
-                </div>
-                <a href="builder.html" class="btn-launch">
-                    LAUNCH BUILDER <i data-lucide="cpu"></i>
-                </a>
+        <!-- COMMAND DECK -->
+        <div id="controlPanel">
+            <div class="input-row">
+                <input type="text" id="charInput" placeholder="IDENTITY (e.g. The Platinum Knight)" autocomplete="off">
             </div>
-        `;
-        
-        lucide.createIcons();
-    </script>
+            <div class="input-row">
+                <input type="text" id="prompt" placeholder="MISSION (e.g. Save the World)" autocomplete="off">
+                <button id="startBtn">INITIATE</button>
+            </div>
+            <div id="gpuStatus">GPU UPLINK: OFFLINE</div>
+        </div>
+    </main>
+
+    <script type="module" src="main.js"></script>
 </body>
 </html>
